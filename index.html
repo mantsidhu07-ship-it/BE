@@ -1,0 +1,220 @@
+<!DOCTYPE html><html>
+<head><meta charset="UTF-8">
+<title>THE GREATEST</title><link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet"><style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+font-family:'Special Elite', monospace;
+color:white;
+text-align:center;
+background-image:url("background.jpg");
+background-size:cover;
+background-position:center;
+overflow:hidden;
+}
+
+/* dark cinematic overlay */
+
+body::before{
+content:"";
+position:absolute;
+width:100%;
+height:100%;
+background:linear-gradient(
+to bottom,
+rgba(0,0,0,0.2),
+rgba(0,0,0,0.8)
+);
+z-index:0;
+}
+
+/* film grain */
+
+body::after{
+content:"";
+position:absolute;
+width:100%;
+height:100%;
+background-image:url("https://grainy-gradients.vercel.app/noise.svg");
+opacity:0.18;
+pointer-events:none;
+}
+
+/* particle canvas */
+
+canvas{
+position:absolute;
+top:0;
+left:0;
+z-index:1;
+}
+
+/* content */
+
+.container{
+position:relative;
+z-index:2;
+}
+
+/* glow animation */
+
+@keyframes glowPulse{
+
+0%{
+text-shadow:0 0 10px rgba(255,255,255,0.35);
+}
+
+50%{
+text-shadow:
+0 0 25px rgba(255,255,255,0.9),
+0 0 60px rgba(255,255,255,0.5);
+}
+
+100%{
+text-shadow:0 0 10px rgba(255,255,255,0.35);
+}
+
+}
+
+/* title */
+
+#title{
+font-size:82px;
+letter-spacing:6px;
+cursor:pointer;
+animation:glowPulse 5s infinite;
+transition:0.3s;
+}
+
+#title:hover{
+transform:scale(1.08);
+}
+
+/* tagline */
+
+#tagline{
+margin-top:18px;
+font-size:20px;
+letter-spacing:2px;
+opacity:0.9;
+}
+
+#hint{
+margin-top:14px;
+font-size:12px;
+opacity:0.5;
+letter-spacing:2px;
+}
+
+</style></head><body><canvas id="particles"></canvas>
+
+<div class="container"><div id="title">THE GREATEST</div><div id="tagline">
+only vocals. still got a vibe. that's Billie Eilish
+</div><div id="hint">
+tap the title
+</div></div><audio id="song" loop>
+<source src="greatest.mp3" type="audio/mpeg">
+</audio><script>
+
+/* AUDIO TOGGLE */
+
+let title=document.getElementById("title");
+let song=document.getElementById("song");
+let playing=false;
+
+title.onclick=function(){
+
+if(!playing){
+song.play();
+playing=true;
+}else{
+song.pause();
+playing=false;
+}
+
+}
+
+/* BILLIE STYLE PARTICLES */
+
+const canvas=document.getElementById("particles");
+const ctx=canvas.getContext("2d");
+
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let particles=[];
+
+for(let i=0;i<70;i++){
+
+particles.push({
+
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+size:Math.random()*2.5+0.5,
+speed:Math.random()*0.35+0.15,
+drift:(Math.random()-0.5)*0.3,
+opacity:Math.random()*0.6+0.2
+
+});
+
+}
+
+function animate(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+particles.forEach(p=>{
+
+let speedBoost=playing?1.8:1;
+
+ctx.fillStyle="rgba(255,255,255,"+p.opacity+")";
+
+ctx.beginPath();
+ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+ctx.fill();
+
+/* upward float */
+
+p.y-=p.speed*speedBoost;
+
+/* subtle side drift */
+
+p.x+=p.drift;
+
+/* reset particle */
+
+if(p.y<0){
+p.y=canvas.height;
+p.x=Math.random()*canvas.width;
+}
+
+if(p.x>canvas.width) p.x=0;
+if(p.x<0) p.x=canvas.width;
+
+});
+
+requestAnimationFrame(animate);
+
+}
+
+animate();
+
+window.addEventListener("resize",()=>{
+
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+});
+
+</script></body>
+</html>
